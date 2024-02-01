@@ -1,0 +1,238 @@
+import { Avatar, Button, TextField } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { useQuery } from "react-query";
+import { io } from "socket.io-client";
+import customAxios from "../api/customAxios";
+import { findEveryoneUserFollows } from "../api/followApi";
+import "../css/Chat.css";
+const socket = io.connect("https://sage-flan-e06d7e.netlify.app", {
+  withCredentials: true,
+});
+
+const Chat = () => {
+  const [chatInput, setChatInput] = useState("");
+  const [dbMessages, setDbMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [currentUser, setCurrentUser] = useState(undefined);
+  const [currentRoomId, setCurrentRoomId] = useState(undefined);
+  const chatInputRef = useRef(null);
+  const { data: users } = useQuery("follows", findEveryoneUserFollows, {
+    cacheTime: 0,
+  });
+
+  const handleScroll = () => {
+    window.scrollTo({
+      top: chatInputRef.offsetTop,
+      left: 0,
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    handleScroll();
+    if (currentUser) {
+      customAxios
+        .get("/conversation/convoInfo", {
+          params: {
+            followeeId: currentUser.id,
+          },
+        })
+        .then((res) => {
+          setCurrentRoomId(res.data[0].room_id);
+          if (Object.keys(res.data[0]).length > 1) {
+            setDbMessages(res.data);
+          }
+        });
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentRoomId) socket.emit("join-room", currentRoomId);
+  }, [currentRoomId]);
+
+  useEffect(() => {
+    socket.on("receive-message", (message) => {
+      setMessages((prevState) => [...prevState, { message, received: true }]);
+    });
+  }, [socket]);
+
+  /*useEffect(() => {
+    return () => {
+      if (socket) socket.close();
+    };
+  }, []);*/
+
+  const sendMessage = () => {
+    if (chatInput) {
+      setDbMessages((prevState) => [
+        ...prevState,
+        { message: chatInput, received: false },
+      ]);
+      socket.emit("send-message", chatInput, currentRoomId, currentUser.id);
+    }
+  };
+
+  const handleUsernameClick = (followee) => {
+    if (followee !== currentUser) {
+      setCurrentUser(followee);
+      setDbMessages(undefined);
+      setMessages([]);
+    }
+  };
+
+  const handleInput = (e) => {
+    setChatInput(e.target.value);
+  };
+
+  return (
+    <div className="chat">
+      <div className="container">
+        <div className="users">
+          {users?.data.length > 0 ? (
+            users.data.map((user, i) => {
+              return (
+                <div
+                  key={user.id}
+                  className="user"
+                  onClick={() => handleUsernameClick(user)}
+                >
+                  <Avatar sx={{ background: "red" }}>
+                    {user.username.charAt(0).toUpperCase()}
+                  </Avatar>
+                  <div className="name-container">
+                    <p className="name">{user.name}</p>
+                    <p className="username">@{user.username}</p>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <h2 style={{ color: "white" }}>
+              Follow someone to start chatting!
+            </h2>
+          )}
+        </div>
+        <div className="chat-interface">
+          {dbMessages &&
+            dbMessages.map((message, index, messageArray) => {
+              if (message.received === true) {
+                if (index === 0) {
+                  return (
+                    <span
+                      style={{ marginBottom: "2px" }}
+                      className="received-message-container"
+                      key={index}
+                    >
+                      <div className="received-message">{message.message}</div>
+                      <Avatar>
+                        {currentUser.username.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </span>
+                  );
+                }
+                if (
+                  messageArray[index - 1 < 0 ? 0 : index - 1].received === true
+                ) {
+                  return (
+                    <span
+                      className="received-message-container-no-margin"
+                      key={index}
+                    >
+                      <div className="received-message">{message.message}</div>
+                      <Avatar
+                        sx={{
+                          background: "#2c2633",
+                          color: "#2c2633",
+                        }}
+                      >
+                        nothing
+                      </Avatar>
+                    </span>
+                  );
+                } else {
+                  return (
+                    <span className="received-message-container" key={index}>
+                      <div className="received-message">{message.message}</div>
+                      <Avatar>
+                        {currentUser.username.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </span>
+                  );
+                }
+              } else {
+                if (index === 0 && message.message !== null) {
+                  return (
+                    <span
+                      key={index}
+                      style={{ marginBottom: "2px" }}
+                      className="sent-message-container"
+                    >
+                      <Avatar>You</Avatar>
+                      <div className="sent-message">{message.message}</div>
+                    </span>
+                  );
+                }
+                if (
+                  messageArray[index - 1 < 0 ? 0 : index - 1].received ===
+                    false &&
+                  message.message !== null
+                ) {
+                  return (
+                    <span
+                      className="sent-message-container-no-margin"
+                      key={index}
+                    >
+                      <Avatar
+                        sx={{
+                          background: "#2c2633",
+                          color: "#2c2633",
+                        }}
+                      >
+                        nothing
+                      </Avatar>
+                      <div className="sent-message">{message.message}</div>
+                    </span>
+                  );
+                } else {
+                  if (message.message !== null) {
+                    return (
+                      <span className="sent-message-container" key={index}>
+                        <Avatar>You</Avatar>
+                        <div className="sent-message">{message.message}</div>
+                      </span>
+                    );
+                  }
+                }
+              }
+            })}
+          <div className="chat-input">
+            <TextField
+              variant="outlined"
+              sx={{
+                flex: "1",
+                "& .MuiInputBase-root": {
+                  color: "white",
+                },
+              }}
+              size="small"
+              multiline
+              value={chatInput}
+              onChange={(e) => handleInput(e)}
+            />
+            {currentUser === undefined && currentRoomId === undefined ? (
+              <Button variant="contained" disabled>
+                Disabled
+              </Button>
+            ) : (
+              <Button variant="contained" onClick={sendMessage}>
+                Send message
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Chat;

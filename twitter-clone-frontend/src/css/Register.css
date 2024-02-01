@@ -1,0 +1,23 @@
+.register form {
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 8%;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  background-color: rgb(249 250 251);
+}
+
+.register .first-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.register h2 {
+  margin-top: 0;
+}
+
+.register .login-link {
+  text-align: left;
+}

@@ -1,0 +1,81 @@
+.single-comment-wrapper {
+    max-width: 70%;
+    width: 100%;
+    margin: 0 auto
+}
+
+.single-comment {
+    display: flex;
+    border: 1px solid #2c2633;
+    background: #1f1b24;
+    padding: 10px;
+}
+
+.single-comment .upper-part {
+    white-space: break-spaces;
+    margin-left: 8px;
+    width: 100%;
+    text-align: left;
+}
+
+.single-comment .upper-part .delete-icon {
+    margin-left: auto;
+}
+
+
+.single-comment .modal {
+    height: 100%;
+    width: 100%;
+    color: red;
+}
+
+.single-comment p {
+    color: white;
+    text-align: left;
+    word-break: break-word;
+    margin: 5px 0 0;
+    margin-bottom: 5px;
+}
+
+.single-comment .upper-part span {
+    margin: 0;
+    color: white;
+}
+
+.single-comment .upper-part .seperator {
+    margin: 0 4px 0 4px;
+    color: gray;
+}
+
+.single-comment .upper-part .username::before {
+    content: "@";
+}
+
+.single-comment .upper-part .username:hover {
+    color: dodgerblue;
+}
+
+.single-comment .upper-part .date {
+    color: gray;
+}
+
+.reply-count {
+    margin:5px;
+    padding: 10px;
+}
+
+.reply-count .wrapper {
+    border-radius: 16px;
+    padding: 7px;
+    color: dodgerblue;
+}
+
+.reply-count .wrapper:hover {
+    margin:5px;
+    background: rgba(30, 144, 255, 0.25);
+    cursor: pointer;
+}
+
+.hide {
+    display: none;
+}

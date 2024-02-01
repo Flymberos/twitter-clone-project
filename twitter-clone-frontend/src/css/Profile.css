@@ -1,0 +1,106 @@
+.profile {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.profile .posts {
+    width: 80%
+}
+
+.profile .banner {
+    max-height: 200px;
+    width: 100%;
+    height: auto;
+}
+
+.profile .row-1 {
+    display: flex;
+    justify-content: space-between;
+    height: fit-content;
+    position: relative;
+}
+
+.profile .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: dodgerblue;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    border: 2px solid black;
+    bottom: -20px;
+    left: 10px;
+    font-size: 2em;
+}
+
+.profile .username-container {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.profile .username-container .fullname {
+    font-size: 1.25em;
+    color: #E7E9EA;
+}
+
+.profile .username-container .username {
+    color: #808080;
+}
+
+.profile .bio {
+    color: #E7E9EA;
+    text-align: left;
+    margin: 1px 0 1px 0;
+}
+
+.profile .icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.profile .join-date {
+    color: #808080;
+    margin-right: 10px;
+
+}
+
+.profile .location {
+    color: #808080;
+}
+
+.profile .follow-color {
+    color: #808080;
+    margin-right: 10px;
+}
+
+.profile .posts-h2 {
+    color: white;
+    margin-bottom: 5px;
+}
+
+@media screen and (max-width: 768px) {
+    .profile {
+        width: 80%
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .profile .posts {
+        width: 90%
+    }
+}
+
+
+@media screen and (max-width: 450px) {
+    .profile {
+        width: 90%
+    }
+}
